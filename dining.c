@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
     N=0, TIME=50000;
 
     /*GETTING PARAMETER*/
-    if(argc < 5) {
+    if(argc < 3) {
           printf("Utilizar:\n");
           printf("./dining -n <numero de filosofos>\n");
           exit(1);
@@ -57,10 +57,6 @@ int main(int argc, char* argv[]){
                      case 'n': 
                           i++;
                           N = atoi(argv[i]);
-                          break;
-                     case 't':
-                          i++;
-                          TIME = atoi(argv[i]);
                           break;
                      default:
                           printf("Parametro invalido: %s\n",argv[i]);
