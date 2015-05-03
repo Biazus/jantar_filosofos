@@ -13,17 +13,21 @@ dinner_start(const size_t num_phillies)
 
     srand(time(NULL));
 
-    if (num_phillies > 0) {
-			pthread_cond_init(&Fork_Is_Free[0], NULL);
-			phillie_create(&phillie, 0, false);
-			Phillies[0] = phillie;
+    pthread_mutex_init(&Forks_Are_Being_Grabbed, NULL);
+    pthread_mutex_init(&Forks_Are_Being_Dropped, NULL);
+    pthread_mutex_init(&Phillie_Is_Trying_To_Eat, NULL);
 
-		for (size_t i = 1; i != num_phillies; i++) {
-			pthread_cond_init(&Fork_Is_Free[i], NULL);
-			phillie_create(&phillie, i, true);
-			Phillies[i] = phillie;
-		}
-    }
+	for (size_t i = 0; i != num_phillies; i++) {
+		pthread_cond_init(&Fork_Is_Free[i], NULL);
+
+        if (i % 2 == 0) {
+		    phillie_create(&phillie, i, true);
+        } else {
+            phillie_create(&phillie, i, false);
+        }
+
+		Phillies[i] = phillie;
+	}
 
     Num_Phillies = num_phillies;
 
@@ -46,26 +50,26 @@ dinner_show(void)
 }
 
 Phillie *
-get_left_phillie(Phillie phillie)
+get_left_phillie(const Phillie phillie)
 {
     return &Phillies[(phillie.id + Num_Phillies - 1) % Num_Phillies];
 }
 
 
 Phillie *
-get_right_phillie(Phillie phillie)
+get_right_phillie(const Phillie phillie)
 {
    return &Phillies[(phillie.id + 1) % Num_Phillies];
 }
 
 size_t
-get_left_fork(Phillie phillie)
+get_left_fork(const Phillie phillie)
 {
     return phillie.id;
 }
 
 size_t
-get_right_fork(Phillie phillie)
+get_right_fork(const Phillie phillie)
 {
     return get_right_phillie(phillie)->id;
 }
