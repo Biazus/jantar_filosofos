@@ -31,9 +31,10 @@
 sem_t * S;
 sem_t mutex;
 int * phil_num;
+int * aging_vec;
 char * state;
 pthread_t * thread_id;
-int N, TIME;
+int N, TIME, aging;
 
 /*FUNC DECLARATIONS  */
 void * philosophize(void *num);
@@ -43,7 +44,8 @@ void test_fork(int ph_num);
 
 int main(int argc, char* argv[]){
     int i=0, j=0;
-    N=0, TIME=50000;
+    N=0;
+    aging=0;
 
     /*GETTING PARAMETER*/
     if(argc < 3) {
@@ -72,6 +74,7 @@ int main(int argc, char* argv[]){
     phil_num=(int *) malloc(N*sizeof(int));
     state=(char *) malloc(N*sizeof(char));
     thread_id = (pthread_t *) malloc(N*sizeof(pthread_t));
+    aging_vec=(int *) malloc(N*sizeof(int));
 
     for(j=0;j<N;j++)
         phil_num[j]=j;
@@ -83,6 +86,9 @@ int main(int argc, char* argv[]){
 
     for(i=0;i<N;i++)
         state[i]= THINKING;
+    
+    for(i=0;i<N;i++)
+        aging_vec[i]= 0;
 
     for(i=0;i<N;i++)
     {
@@ -147,11 +153,15 @@ void release_fork(int ph_num){
     //printf("Filósofo %d libera os garfos %d e %d \n",ph_num+1,LEFT+1,ph_num+1);
     //printf("Filósofo %d está pensando\n",ph_num+1);
     
+    aging_vec[ph_num]=0;
     int k;
     for(k=0;k<N;k++)
         printf("%c", state[k]);
     
     printf("\n");
+
+    if(aging_vec[aging]>2)
+        test_fork(aging);
 
     test_fork(LEFT);
     test_fork(RIGHT);
@@ -171,7 +181,12 @@ void test_fork(int ph_num){
             printf("%c", state[k]);
         
         printf("\n");
-
+        aging_vec[ph_num]=0;
         sem_post(&S[ph_num]);
+    }
+    else{
+        aging_vec[ph_num]++;
+        if(aging_vec[ph_num]>aging_vec[aging])
+            aging=ph_num;
     }
 }
