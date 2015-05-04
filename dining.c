@@ -41,6 +41,7 @@ void * philosophize(void *num);
 void take_fork(int ph_num);
 void release_fork(int ph_num);
 void test_fork(int ph_num);
+void update_aging();
 
 int main(int argc, char* argv[]){
     int i=0, j=0;
@@ -100,7 +101,7 @@ int main(int argc, char* argv[]){
     /* PRINTING INITIAL STATE*/
     int k;
     for(k=0;k<N;k++)
-        printf("%c", state[k]);
+        printf("%c ", state[k]);
     printf("\n");
 
     for(i=0;i<N;i++)
@@ -137,7 +138,7 @@ void take_fork(int ph_num){
 
     int k;
     for(k=0;k<N;k++)
-        printf("%c", state[k]);
+        printf("%c ", state[k]);
 
     printf("\n");
 
@@ -156,21 +157,23 @@ void release_fork(int ph_num){
     aging_vec[ph_num]=0;
     int k;
     for(k=0;k<N;k++)
-        printf("%c", state[k]);
+        printf("%c ", state[k]);
     
     printf("\n");
 
     if(aging_vec[aging]>2)
         test_fork(aging);
-
+    
     test_fork(LEFT);
     test_fork(RIGHT);
     sem_post(&mutex);
+    update_aging();
 }
 
 void test_fork(int ph_num){
-    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING)
+    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING && ((aging_vec[LEFT] < 3 && aging_vec[RIGHT] < 3) || aging == ph_num))
     {
+        
         state[ph_num] = EATING;
         sleep(1);
         //printf("Filósofo %d pega os garfos %d e %d\n",ph_num+1,LEFT+1,ph_num+1);
@@ -178,7 +181,7 @@ void test_fork(int ph_num){
 
         int k;
         for(k=0;k<N;k++)
-            printf("%c", state[k]);
+            printf("%c ", state[k]);
         
         printf("\n");
         aging_vec[ph_num]=0;
@@ -186,7 +189,16 @@ void test_fork(int ph_num){
     }
     else{
         aging_vec[ph_num]++;
-        if(aging_vec[ph_num]>aging_vec[aging])
-            aging=ph_num;
+//        if(aging_vec[ph_num]>aging_vec[aging])
+//            aging=ph_num;
+    }
+    update_aging();
+}
+
+void update_aging(){
+    int y = 0;
+    for(y=0;y<N;y++){
+        if(aging_vec[y]>aging_vec[aging])
+        aging = y;
     }
 }
