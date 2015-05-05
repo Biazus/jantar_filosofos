@@ -171,7 +171,7 @@ void release_fork(int ph_num){
 }
 
 void test_fork(int ph_num){
-    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING && ((aging_vec[LEFT] < 3 && aging_vec[RIGHT] < 3) || aging == ph_num))
+    if (state[ph_num] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING && ((aging_vec[LEFT] <= aging_vec[ph_num] && aging_vec[RIGHT] <= aging_vec[ph_num])))
     {
         
         state[ph_num] = EATING;
