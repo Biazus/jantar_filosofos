@@ -71,5 +71,8 @@ get_left_fork(const Phillie phillie)
 size_t
 get_right_fork(const Phillie phillie)
 {
-    return get_right_phillie(phillie)->id;
+	Phillie *right_phillie;
+
+	right_phillie = get_right_phillie(phillie);
+    return right_phillie->id;
 }

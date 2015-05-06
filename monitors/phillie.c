@@ -57,6 +57,7 @@ phillie_eat(Phillie *phillie)
             if (left_phillie->status == EATING) {
                 pthread_cond_wait(&Fork_Is_Free[get_left_fork(*phillie)],
                                   &Phillie_Is_Trying_To_Eat);
+
             }
             if (right_phillie->status == EATING) {
                 pthread_cond_wait(&Fork_Is_Free[get_right_fork(*phillie)],
@@ -84,10 +85,11 @@ phillie_think(Phillie *phillie)
 {
     pthread_mutex_lock(&Forks_Are_Being_Dropped);
 
-    pthread_cond_signal(&Fork_Is_Free[get_left_fork(*phillie)]);
-    pthread_cond_signal(&Fork_Is_Free[get_right_fork(*phillie)]);
     phillie->status = THINKING;
     dinner_show();
+
+    pthread_cond_signal(&Fork_Is_Free[get_left_fork(*phillie)]);
+    pthread_cond_signal(&Fork_Is_Free[get_right_fork(*phillie)]);
 
     pthread_mutex_unlock(&Forks_Are_Being_Dropped);
 }
